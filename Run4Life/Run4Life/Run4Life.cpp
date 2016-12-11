@@ -1,12 +1,26 @@
 #include "stdafx.h"
-#include <iostream>
 #include <Windows.h>
+#include <iostream>
 
 using namespace std;
 
 char map[10][500] = {}, cursor = 3;;
-int diff = 100, row = 0, jump = 0, y = 4, score = 0;
+int jump = 0, y = 4, score = 0, n = 0;
+int diff = 100, rarity = 35, hdiff = 3;
 bool gameOver = false;
+
+void SetColor(int ForgC)
+{
+	WORD wColor;
+	HANDLE hStdOut = GetStdHandle(STD_OUTPUT_HANDLE);
+	CONSOLE_SCREEN_BUFFER_INFO csbi;
+	if (GetConsoleScreenBufferInfo(hStdOut, &csbi))
+	{
+		wColor = (csbi.wAttributes & 0xF0) + (ForgC & 0x0F);
+		SetConsoleTextAttribute(hStdOut, wColor);
+	}
+	return;
+}
 
 void gotoXY(int x, int y) {
 	COORD coord = { x,y };
@@ -14,31 +28,32 @@ void gotoXY(int x, int y) {
 }
 
 void firstGenerator() {
-	for (int index = 1; index < 8; index++)
+	int hight = rand() % hdiff;
 		for (int pave = 0; pave < 500; pave++)
 		{
-			if (rand() % diff == 0)
-				map[index][pave] = '#';
-			map[9][pave] = '#';
-			map[0][pave] = '#';
-			if (pave == 499)
-				map[index][pave] = '#';
+			if(pave % rarity == 0)
+				for (int index = 8; index >= 8 - hight; index--)
+				{
+					map[index][pave] = '#';
+					hight = rand() % hdiff;
+				}
+			map[9][pave] = '=';
+			map[0][pave] = '_';
 		}
+
 
 }
 
 void mapGenerator() {
 
-
-
 }
 
 void showMap(int u) {
-	for (int index = 0; index < 10; index++)
+	for (int i = 0; i <= 9; i++)
 	{
-		for (int pave = u; pave <= u + 70; pave++)
+		for (int j = u; j <= u + 50; j++)
 		{
-			cout << map[index][pave];
+			cout << map[i][j];
 		}
 		cout << endl;
 	}
@@ -47,39 +62,41 @@ void showMap(int u) {
 
 int main()
 {
-	int n = 0;
-	//Console configuration
-
 	HWND console = GetConsoleWindow();
 	RECT r;
 	GetWindowRect(console, &r);
 	MoveWindow(console, r.left, r.top, 800, 600, TRUE); // 800 width, 600 height
-
+	_start:
 	firstGenerator();
 	while (gameOver == false)
 		{
 		gotoXY(0, 0);
 		showMap(n);
 		n++;
-		if (jump == 0 && GetAsyncKeyState(VK_SPACE) && map[y + 1][n + 3] == '#')
-			jump = 3;
-		if (jump > 0)
+		if ((jump == 0 || jump < 6)&& GetAsyncKeyState(VK_SPACE) && map[y + 1][n + 3] == '=')
+			jump++;
+		else if (jump>0)
 		{
-			y--; 
-			jump--;
+			y--; jump--;
 		}
-		else if (map[y + 1][n + 4] != '#')
+		else if (map[y + 1][n + 3] != '=')
 		{
 			y++;
 		}
-		gotoXY(4, y);
+		gotoXY(1, y);
+		SetColor(5);
 		cout << cursor;
-		if (map[y][n + 3] == '#')
+		SetColor(15);
+		if (map[y][n] == '#')
 			gameOver = true;
 		score++;
+		if(n > 75 && n % rarity == 0)
+			mapGenerator();
+		if (n == 495)
+			n = 5;
 		Sleep(50);
 		}
-	cout << endl << endl << endl << endl <<  "GAME OVER! " << endl;
+	cout << endl << endl << endl << endl << "GAME OVER! " << endl;
 	return 0;
 }
 
