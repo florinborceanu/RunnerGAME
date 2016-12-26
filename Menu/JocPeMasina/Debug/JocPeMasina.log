@@ -1,0 +1,4 @@
+﻿  JocPeMasina.cpp
+c:\users\impressive\desktop\jocpemasina\jocpemasina\jocpemasina.cpp(13): warning C4838: conversion from 'int' to 'SHORT' requires a narrowing conversion
+  JocPeMasina.vcxproj -> C:\Users\Impressive\Desktop\JocPeMasina\Debug\JocPeMasina.exe
+  JocPeMasina.vcxproj -> C:\Users\Impressive\Desktop\JocPeMasina\Debug\JocPeMasina.pdb (Full PDB)
