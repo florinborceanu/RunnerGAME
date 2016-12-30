@@ -9,22 +9,20 @@ int jump = 0, y = 4, score = 0, n = 0;
 int diff = 100, rarity = 35, hdiff = 3;
 bool gameOver = false;
 
-void SetColor(int ForgC)
-{
-	WORD wColor;
-	HANDLE hStdOut = GetStdHandle(STD_OUTPUT_HANDLE);
-	CONSOLE_SCREEN_BUFFER_INFO csbi;
-	if (GetConsoleScreenBufferInfo(hStdOut, &csbi))
-	{
-		wColor = (csbi.wAttributes & 0xF0) + (ForgC & 0x0F);
-		SetConsoleTextAttribute(hStdOut, wColor);
-	}
-	return;
-}
-
 void gotoXY(int x, int y) {
 	COORD coord = { x,y };
 	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
+}
+
+void loadingScreen() {
+	cout << "Loading ... \n\n\n\n\     |";
+	for (int i = 0; i < 10; i++)
+	{
+		cout << "=";
+		Sleep(1000-(i*50));
+	}
+	cout << "|";
+	Sleep(300);
 }
 
 void firstGenerator() {
@@ -66,7 +64,7 @@ int main()
 	RECT r;
 	GetWindowRect(console, &r);
 	MoveWindow(console, r.left, r.top, 800, 600, TRUE); // 800 width, 600 height
-	_start:
+	loadingScreen();
 	firstGenerator();
 	while (gameOver == false)
 		{
@@ -84,9 +82,7 @@ int main()
 			y++;
 		}
 		gotoXY(1, y);
-		SetColor(5);
 		cout << cursor;
-		SetColor(15);
 		if (map[y][n] == '#')
 			gameOver = true;
 		score++;
@@ -94,7 +90,7 @@ int main()
 			mapGenerator();
 		if (n == 495)
 			n = 5;
-		Sleep(50);
+		Sleep(20);
 		}
 	cout << endl << endl << endl << endl << "GAME OVER! " << endl;
 	return 0;
