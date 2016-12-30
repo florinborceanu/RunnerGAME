@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include <Windows.h>
 #include <iostream>
+#include <string>
 
 using namespace std;
 
@@ -15,6 +16,7 @@ void gotoXY(int x, int y) {
 }
 
 void loadingScreen() {
+	system("cls");
 	cout << "Loading ... \n\n\n\n\     |";
 	for (int i = 0; i < 10; i++)
 	{
@@ -23,6 +25,80 @@ void loadingScreen() {
 	}
 	cout << "|";
 	Sleep(300);
+}
+
+int mainMenu() {
+	string Menu[3] = { "Start Game", "HighScores", "Exit" };
+	int pointer = 0;
+
+	while (true)
+	{
+		system("cls");
+
+		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);
+		cout << "     Run4Life\n";
+		cout << "      Main Menu\n\n";
+
+		for (int i = 0; i < 3; ++i)
+		{
+			if (i == pointer)
+			{
+				SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 11);
+				cout << Menu[i] << endl;
+			}
+			else
+			{
+				SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);
+				cout << Menu[i] << endl;
+			}
+		}
+
+		while (true)
+		{
+			if (GetAsyncKeyState(VK_UP) != 0)
+			{
+				pointer -= 1;
+				if (pointer == -1)
+				{
+					pointer = 2;
+				}
+				break;
+			}
+			else if (GetAsyncKeyState(VK_DOWN) != 0)
+			{
+				pointer += 1;
+				if (pointer == 3)
+				{
+					pointer = 0;
+				}
+				break;
+			}
+			else if (GetAsyncKeyState(VK_RETURN) != 0)
+			{
+				switch (pointer)
+				{
+				case 0:
+				{
+					cout << "\n\n\nStarting new game...";
+					Sleep(1000);
+				} break;
+				case 1:
+				{
+					cout << "\n\n\nThere are the highscores...";
+					Sleep(1000);
+				} break;
+				case 2:
+				{
+					return 0;
+				} break;
+				}
+				break;
+			}
+		}
+
+		Sleep(150);
+	}
+	return 0;
 }
 
 void firstGenerator() {
@@ -64,6 +140,7 @@ int main()
 	RECT r;
 	GetWindowRect(console, &r);
 	MoveWindow(console, r.left, r.top, 800, 600, TRUE); // 800 width, 600 height
+	mainMenu();
 	loadingScreen();
 	firstGenerator();
 	while (gameOver == false)
