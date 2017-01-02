@@ -1,6 +1,6 @@
 ﻿  Run4Life.cpp
-c:\users\impressive\desktop\runnergame\run4life\run4life\run4life.cpp(14): warning C4838: conversion from 'int' to 'SHORT' requires a narrowing conversion
-c:\users\impressive\desktop\runnergame\run4life\run4life\run4life.cpp(20): warning C4129: ' ': unrecognized character escape sequence
-c:\users\impressive\desktop\runnergame\run4life\run4life\run4life.cpp(186): warning C4102: '_exit': unreferenced label
+c:\users\impressive\desktop\runnergame\run4life\run4life\run4life.cpp(17): warning C4838: conversion from 'int' to 'SHORT' requires a narrowing conversion
+c:\users\impressive\desktop\runnergame\run4life\run4life\run4life.cpp(24): warning C4129: ' ': unrecognized character escape sequence
+c:\users\impressive\desktop\runnergame\run4life\run4life\run4life.cpp(190): warning C4102: '_exit': unreferenced label
   Run4Life.vcxproj -> C:\Users\Impressive\Desktop\RunnerGAME\Run4Life\Debug\Run4Life.exe
   Run4Life.vcxproj -> C:\Users\Impressive\Desktop\RunnerGAME\Run4Life\Debug\Run4Life.pdb (Full PDB)

@@ -1,7 +1,9 @@
 #include "stdafx.h"
 #include <Windows.h>
 #include <iostream>
+#include <fstream>
 #include <string>
+#include "highscoreSys.h"
 
 using namespace std;
 
@@ -9,11 +11,13 @@ char map[10][500] = {}, cursor = 3;;
 int jump = 0, y = 4, score = 0, n = 0;
 int diff = 100, rarity = 35, hdiff = 3;
 int gameStatus = 0;
+highScores highscores[5];
 
 void gotoXY(int x, int y) {
 	COORD coord = { x,y };
 	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
 }
+
 
 void loadingScreen() {
 	system("cls");
@@ -86,8 +90,8 @@ int mainMenu() {
 				} break;
 				case 1:
 				{
-					cout << "\n\n\nThere are the highscores...";
-					Sleep(1000);
+					showHighscores(highscores);
+					Sleep(2000);
 				} break;
 				case 2:
 				{
