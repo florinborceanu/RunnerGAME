@@ -8,7 +8,7 @@ using namespace std;
 char map[10][500] = {}, cursor = 3;;
 int jump = 0, y = 4, score = 0, n = 0;
 int diff = 100, rarity = 35, hdiff = 3;
-bool gameOver = false;
+int gameStatus = 0;
 
 void gotoXY(int x, int y) {
 	COORD coord = { x,y };
@@ -28,7 +28,7 @@ void loadingScreen() {
 }
 
 int mainMenu() {
-	string Menu[3] = { "Start Game", "HighScores", "Exit" };
+	string Menu[4] = { "Start Game", "HighScores","Credits", "Exit" };
 	int pointer = 0;
 
 	while (true)
@@ -36,10 +36,10 @@ int mainMenu() {
 		system("cls");
 
 		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);
-		cout << "     Run4Life\n";
+		cout << "        Run4Life\n";
 		cout << "      Main Menu\n\n";
 
-		for (int i = 0; i < 3; ++i)
+		for (int i = 0; i < 4; ++i)
 		{
 			if (i == pointer)
 			{
@@ -60,14 +60,14 @@ int mainMenu() {
 				pointer -= 1;
 				if (pointer == -1)
 				{
-					pointer = 2;
+					pointer = 3;
 				}
 				break;
 			}
 			else if (GetAsyncKeyState(VK_DOWN) != 0)
 			{
 				pointer += 1;
-				if (pointer == 3)
+				if (pointer == 4)
 				{
 					pointer = 0;
 				}
@@ -81,6 +81,8 @@ int mainMenu() {
 				{
 					cout << "\n\n\nStarting new game...";
 					Sleep(1000);
+					loadingScreen();
+					return 0;
 				} break;
 				case 1:
 				{
@@ -89,8 +91,13 @@ int mainMenu() {
 				} break;
 				case 2:
 				{
-					return 0;
+					system("cls");
+					cout << "     Credits: \n Game development: Florin Borceanu \n Some help: Google\n";
+					Sleep(4000);
 				} break;
+				case 3:
+					gameStatus = -1;
+					return 0;;
 				}
 				break;
 			}
@@ -140,10 +147,10 @@ int main()
 	RECT r;
 	GetWindowRect(console, &r);
 	MoveWindow(console, r.left, r.top, 800, 600, TRUE); // 800 width, 600 height
+	_mainMenu:
 	mainMenu();
-	loadingScreen();
 	firstGenerator();
-	while (gameOver == false)
+	while (gameStatus == 0)
 		{
 		gotoXY(0, 0);
 		showMap(n);
@@ -161,7 +168,7 @@ int main()
 		gotoXY(1, y);
 		cout << cursor;
 		if (map[y][n] == '#')
-			gameOver = true;
+			gameStatus = 1;
 		score++;
 		if(n > 75 && n % rarity == 0)
 			mapGenerator();
@@ -169,7 +176,14 @@ int main()
 			n = 5;
 		Sleep(20);
 		}
-	cout << endl << endl << endl << endl << "GAME OVER! " << endl;
+	if (gameStatus == 1)
+	{
+		cout << endl << endl << endl << endl << "GAME OVER! " << endl;
+		Sleep(2500);
+		goto _mainMenu;
+	}
+
+	_exit:
 	return 0;
 }
 
