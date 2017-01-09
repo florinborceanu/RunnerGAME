@@ -7,7 +7,8 @@
 
 using namespace std;
 
-char map[10][500] = {}, cursor = 3;;
+char map[10][500] = {}, cursor = 3;
+char name[100];
 int jump = 0, y = 4, score = 0, n = 0;
 int diff = 100, rarity = 35, hdiff = 3;
 int gameStatus = 0;
@@ -83,9 +84,14 @@ int mainMenu() {
 				{
 				case 0:
 				{
+					system("cls");
+					cout << "What's your name, you mighty runner? : ";
+					cin >> name;
+					system("cls");
 					cout << "\n\n\nStarting new game...";
 					Sleep(1000);
-					loadingScreen();
+					gameStatus = 0;
+					//loadingScreen();
 					return 0;
 				} break;
 				case 1:
@@ -101,6 +107,7 @@ int mainMenu() {
 				} break;
 				case 3:
 					gameStatus = -1;
+					updateHighscores(highscores);
 					return 0;;
 				}
 				break;
@@ -147,15 +154,14 @@ void showMap(int u) {
 
 int main()
 {
-	char name[100];
 	HWND console = GetConsoleWindow();
 	RECT r;
 	GetWindowRect(console, &r);
 	MoveWindow(console, r.left, r.top, 800, 600, TRUE); // 800 width, 600 height
 	_mainMenu:
-	loadHighscores(highscores);
 	mainMenu();
 	firstGenerator();
+	score = 0;
 	while (gameStatus == 0)
 		{
 		gotoXY(0, 0);
@@ -182,42 +188,41 @@ int main()
 			n = 5;
 		Sleep(20);
 		}
-	if (score > highscores[4].score)
-	{
-		if (score > highscores[3].score)
-			if (score > highscores[3].score)
-				if (score > highscores[2].score)
-					if (score > highscores[1].score)
-					{
-						cout << "Name: "; cin >> name;
-						addScore(highscores, score, name, 0);
-					}
-					else
-					{
-						cout << "Name: "; cin >> name;
-						addScore(highscores, score, name, 1);
-					}
-				else
-				{
-					cout << "Name: "; cin >> name;
-					addScore(highscores, score, name, 2);
-				}
-			else
-			{
-				cout << "Name: "; cin >> name;
-				addScore(highscores, score, name, 3);
-			}
-		else
-		{
-			strcpy_s(highscores[4].name, name);
-			highscores[4].score = score;
-		}
-		updateHighscores(highscores);
-	}
+
 	if (gameStatus == 1)
 	{
 		cout << endl << endl << endl << endl << "GAME OVER! " << endl;
-		gameStatus = 0;
+		Sleep(500);
+		if (score > highscores[4].score)
+		{
+			if (score > highscores[3].score)
+				if (score > highscores[3].score)
+					if (score > highscores[2].score)
+						if (score > highscores[1].score)
+						{
+							//addScore(highscores, score, name, 0);
+						}
+						else
+						{
+							//addScore(highscores, score, name, 1);
+						}
+					else
+					{
+						//addScore(highscores, score, name, 2);
+					}
+				else
+				{
+					//addScore(highscores, score, name, 3);
+				}
+			else
+			{
+				cout << "You beat the 5th highscore !";
+				strcpy_s(highscores[4].name, name);
+				highscores[4].score = score;
+				cout << "Splendid ! !";
+				Sleep(500);
+			}
+		}
 		Sleep(2500);
 		goto _mainMenu;
 	}

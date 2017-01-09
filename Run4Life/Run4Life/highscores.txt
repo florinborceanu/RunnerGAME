@@ -1,5 +1,5 @@
-John 1000
-Smith 999
-Morgan 998
-Freeman 997
-Chuck 996
+John 100000
+Smith 10000
+Morgan 1000
+Freeman 999
+Eu 10000
