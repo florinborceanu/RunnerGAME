@@ -155,6 +155,7 @@ int main()
 	RECT r;
 	GetWindowRect(console, &r);
 	MoveWindow(console, r.left, r.top, 800, 600, TRUE); // 800 width, 600 height
+	loadHighscores(highscores);
 	system("cls");
 	cout << "What's your name, you mighty runner? : ";
 	cin >> name;
@@ -197,33 +198,37 @@ int main()
 		Sleep(500);
 		if (score > highscores[4].score)
 		{
-			if (score > highscores[3].score)
 				if (score > highscores[3].score)
 					if (score > highscores[2].score)
 						if (score > highscores[1].score)
-						{
-							//addScore(highscores, score, name, 0);
-						}
+							if (score > highscores[0].score)
+							{
+								cout << "You beat the 1st highscore !";
+								addScore(highscores, score, name, 0);
+							}
+							else
+							{
+								cout << "You beat the 2nd highscore !";
+								addScore(highscores, score, name, 1);
+							}
 						else
 						{
-							//addScore(highscores, score, name, 1);
+							cout << "You beat the 3rd highscore !";
+							addScore(highscores, score, name, 2);
 						}
 					else
 					{
-						//addScore(highscores, score, name, 2);
+						cout << "You beat the 4th highscore !";
+						addScore(highscores, score, name, 3);
 					}
 				else
 				{
-					//addScore(highscores, score, name, 3);
+					cout << "You beat the 5th highscore !";
+					strcpy_s(highscores[4].name, name);
+					highscores[4].score = score;
+					cout << "Splendid ! !";
+					Sleep(500);
 				}
-			else
-			{
-				cout << "You beat the 5th highscore !";
-				strcpy_s(highscores[4].name, name);
-				highscores[4].score = score;
-				cout << "Splendid ! !";
-				Sleep(500);
-			}
 		}
 		Sleep(2500);
 		goto _mainMenu;

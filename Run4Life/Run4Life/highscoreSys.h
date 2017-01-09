@@ -24,30 +24,25 @@ void updateHighscores(highScores scores[5])
 	ofstream outFlux("highscores.txt");
 	for (int i = 0; i < 5; i++)
 	{
-		outFlux << scores[i].name;
-		outFlux << scores[i].score;
+		outFlux << scores[i].name << " ";
+		outFlux << scores[i].score << "\n";
 	}
 	outFlux.close();
 }
 
 void showHighscores(highScores scores[5]) {
-	ifstream inFlux("highscores.txt");
 	for (int i = 0; i < 5; i++)
 	{
-		inFlux >> scores[i].name;
-		inFlux >> scores[i].score;
 		cout << i + 1 << ". " << scores[i].name << endl << "Score: " << scores[i].score << endl;
 	}
-	inFlux.close();
 }
 
 void addScore(highScores scores[5], unsigned int score, char nameOne[100], int position) {
-	for (int i = 3; i >= position; i++)
+	for (int i = 4; i >= position; i--)
 	{
 		strcpy_s(scores[i+1].name, scores[i].name);
 		scores[i + 1].score = scores[i].score;
 	}
 	strcpy_s(scores[position].name, nameOne);
 	scores[position].score = score;
-		
 }
