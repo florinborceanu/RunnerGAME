@@ -26,7 +26,7 @@ void loadingScreen() {
 	for (int i = 0; i < 10; i++)
 	{
 		cout << "=";
-		Sleep(1000-(i*50));
+		Sleep(1000-(i*100));
 	}
 	cout << "|";
 	Sleep(300);
@@ -41,8 +41,9 @@ int mainMenu() {
 		system("cls");
 
 		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);
-		cout << "        Run4Life\n";
-		cout << "      Main Menu\n\n";
+		cout << "            Run4Life\n";
+		cout << "           Main Menu\n(UP/DOWN to move, SPACE to select)\n\n\n";
+
 
 		for (int i = 0; i < 4; ++i)
 		{
@@ -78,20 +79,16 @@ int mainMenu() {
 				}
 				break;
 			}
-			else if (GetAsyncKeyState(VK_RETURN) != 0)
+			else if (GetAsyncKeyState(VK_SPACE) != 0)
 			{
 				switch (pointer)
 				{
 				case 0:
 				{
-					system("cls");
-					cout << "What's your name, you mighty runner? : ";
-					cin >> name;
-					system("cls");
 					cout << "\n\n\nStarting new game...";
 					Sleep(1000);
 					gameStatus = 0;
-					//loadingScreen();
+					loadingScreen();
 					return 0;
 				} break;
 				case 1:
@@ -158,6 +155,11 @@ int main()
 	RECT r;
 	GetWindowRect(console, &r);
 	MoveWindow(console, r.left, r.top, 800, 600, TRUE); // 800 width, 600 height
+	system("cls");
+	cout << "What's your name, you mighty runner? : ";
+	cin >> name;
+	cout << "Ok, " << name << ", let's start !";
+	Sleep(500);
 	_mainMenu:
 	mainMenu();
 	firstGenerator();

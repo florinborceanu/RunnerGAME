@@ -1,5 +1,1 @@
-John 100000
-Smith 10000
-Morgan 1000
-Freeman 999
-Eu 10000
+00000
