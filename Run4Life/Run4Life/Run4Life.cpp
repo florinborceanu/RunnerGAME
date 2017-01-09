@@ -147,11 +147,13 @@ void showMap(int u) {
 
 int main()
 {
+	char name[100];
 	HWND console = GetConsoleWindow();
 	RECT r;
 	GetWindowRect(console, &r);
 	MoveWindow(console, r.left, r.top, 800, 600, TRUE); // 800 width, 600 height
 	_mainMenu:
+	loadHighscores(highscores);
 	mainMenu();
 	firstGenerator();
 	while (gameStatus == 0)
@@ -180,14 +182,46 @@ int main()
 			n = 5;
 		Sleep(20);
 		}
+	if (score > highscores[4].score)
+	{
+		if (score > highscores[3].score)
+			if (score > highscores[3].score)
+				if (score > highscores[2].score)
+					if (score > highscores[1].score)
+					{
+						cout << "Name: "; cin >> name;
+						addScore(highscores, score, name, 0);
+					}
+					else
+					{
+						cout << "Name: "; cin >> name;
+						addScore(highscores, score, name, 1);
+					}
+				else
+				{
+					cout << "Name: "; cin >> name;
+					addScore(highscores, score, name, 2);
+				}
+			else
+			{
+				cout << "Name: "; cin >> name;
+				addScore(highscores, score, name, 3);
+			}
+		else
+		{
+			strcpy_s(highscores[4].name, name);
+			highscores[4].score = score;
+		}
+		updateHighscores(highscores);
+	}
 	if (gameStatus == 1)
 	{
 		cout << endl << endl << endl << endl << "GAME OVER! " << endl;
+		gameStatus = 0;
 		Sleep(2500);
 		goto _mainMenu;
 	}
 
-	_exit:
 	return 0;
 }
 
