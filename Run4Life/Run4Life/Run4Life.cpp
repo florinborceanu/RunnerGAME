@@ -27,8 +27,10 @@ char name[100];
 char cursor = 3;
 int jump = 0, y = 4, score = 0, dist = 0, n = 0;
 int diff = 100, rarity = 50, hdiff = 3;
-int gameStatus = 0;
+int gameStatus = 0, godMode = 0;
 highScores highscores[5];
+
+int startMenu();
 
 void gotoXY(int x, int y) {
 	COORD coord = { x,y };
@@ -49,7 +51,7 @@ void loadingScreen() {
 }
 
 int mainMenu() {
-	string Menu[4] = { "Start Game", "HighScores","Credits", "Exit" };
+	string Menu[5] = { "Start Game","Instructions", "HighScores","Credits", "Exit" };
 	int pointer = 0;
 	Sleep(250);
 	while (true)
@@ -61,7 +63,7 @@ int mainMenu() {
 		cout << "           Main Menu\n(UP/DOWN to move, SPACE to select)\n\n\n";
 
 
-		for (int i = 0; i < 4; ++i)
+		for (int i = 0; i < 5; ++i)
 		{
 			if (i == pointer)
 			{
@@ -82,14 +84,14 @@ int mainMenu() {
 				pointer -= 1;
 				if (pointer == -1)
 				{
-					pointer = 3;
+					pointer = 4;
 				}
 				break;
 			}
 			else if (GetAsyncKeyState(VK_DOWN) != 0)
 			{
 				pointer += 1;
-				if (pointer == 4)
+				if (pointer == 5)
 				{
 					pointer = 0;
 				}
@@ -101,13 +103,30 @@ int mainMenu() {
 				{
 				case 0:
 				{
-					cout << "\n\n\nStarting new game...";
-					Sleep(1000);
-					gameStatus = 0;
-					loadingScreen();
+					if (startMenu() == 1)
+						break;
 					return 0;
+					break;
 				} break;
 				case 1:
+				{
+					system("cls");
+					cout << "     Instructions: \n - SPACE - jump (chargeable)\n - BonusPowerUP - +100 score";
+					cout << "\n - ScoreMultiplierPowerUP - more score for less map";
+					cout << "\n - SlowSpeedPowerUP - slow that speed!";
+					cout << "\n - InvulnerabilityPowerUP - you are Hulk now";
+					cout << "\n - GodMode - you are Hulk, but no highscore for you";
+					cout << "\n - When map blinks, prepare for more!";
+					SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 11);
+					cout << "\n\n< Go Back";
+					SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);
+					Sleep(100);
+					while (GetAsyncKeyState(VK_SPACE) == 0)
+					{
+						Sleep(1);
+					}
+				} break;
+				case 2:
 				{
 					system("cls");
 					cout << "     Highscores:\n";
@@ -121,7 +140,7 @@ int mainMenu() {
 						Sleep(1);
 					}
 				} break;
-				case 2:
+				case 3:
 				{
 					system("cls");
 					cout << "     Credits: \n Game development: Florin Borceanu \n Some help: Google\n";
@@ -134,7 +153,7 @@ int mainMenu() {
 						Sleep(1);
 					}
 				} break;
-				case 3:
+				case 4:
 					gameStatus = -1;
 					updateHighscores(highscores);
 					return 0;;
@@ -144,6 +163,87 @@ int mainMenu() {
 		}
 
 		Sleep(150);
+	}
+	return 0;
+}
+
+int startMenu() {
+	string Menu[3] = { "GodMode >>","Normal Mode >>", "<Go Back" };
+	int pointer = 0;
+	Sleep(250);
+	while (true)
+	{
+		system("cls");
+		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);
+		cout << "      Start new game:\n\n\n";
+
+
+		for (int i = 0; i < 3; ++i)
+		{
+			if (i == pointer)
+			{
+				SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 11);
+				cout << Menu[i] << endl;
+			}
+			else
+			{
+				SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);
+				cout << Menu[i] << endl;
+			}
+		}
+
+		while (true)
+		{
+			if (GetAsyncKeyState(VK_UP) != 0)
+			{
+				pointer -= 1;
+				if (pointer == -1)
+				{
+					pointer = 2;
+				}
+				break;
+			}
+			else if (GetAsyncKeyState(VK_DOWN) != 0)
+			{
+				pointer += 1;
+				if (pointer == 3)
+				{
+					pointer = 0;
+				}
+				break;
+			}
+			else if (GetAsyncKeyState(VK_SPACE) != 0)
+			{
+				switch (pointer)
+				{
+				case 0:
+				{
+					system("cls");
+					cout << "Starting new game as a God ...";
+					gameStatus = 0;
+					godMode = 1;
+					Sleep(500);
+					return 0;
+				} break;
+				case 1:
+				{
+					system("cls");
+					cout << "Starting new game ...";
+					gameStatus = 0;
+					godMode = 0;
+					Sleep(500);
+					loadingScreen();
+					return 0;
+				} break;
+				case 2:
+				{
+					return 1;
+				} break;
+				}
+			}
+
+			Sleep(150);
+		}
 	}
 	return 0;
 }
@@ -218,7 +318,7 @@ void mapGenerator(int pave) {
 
 
 void showMap(int u) {
-	char difficultyName[100];
+	char difficultyName[100] = {};
 	for (int i = 0; i <= 9; i++)
 	{
 		for (int j = u; j <= u + 50; j++)
@@ -228,17 +328,21 @@ void showMap(int u) {
 		cout << endl;
 	}
 	cout << "Score: " << score;
-	if (rarity == 50)
+	if (dist > -1)
 		strcpy_s(difficultyName, "Easy");
-	if (rarity == 45)
+	if (dist > 500)
 		strcpy_s(difficultyName, "Medium-Easy");
-	if (rarity == 40)
+	if (dist > 1000)
 		strcpy_s(difficultyName, "Medium");
-	if (rarity == 35)
+	if (dist > 1500)
 		strcpy_s(difficultyName, "Medium-Hard");
-	if (rarity == 30)
+	if (dist > 2000)
 		strcpy_s(difficultyName, "Hard");
-	cout << "\nJump power: " << jump << "\nDifficulty: " << difficultyName << endl;
+	if (godMode == 1) {
+		cout << "\nDistance: " << dist << endl;
+		cout << "Jump power: " << jump;
+		cout << "\nDifficulty: " << difficultyName << endl;
+	}
 }
 
 void clearMap() {
@@ -288,7 +392,9 @@ int main()
 			y--;
 		gotoXY(1, y);
 		cout << cursor;
-		if (map[y][n].blockType != 0)
+		if (godMode == 1 && GetAsyncKeyState(VK_SPACE))
+			gameStatus = 1;
+		if (map[y][n].blockType != 0 && godMode == 0)
 			gameStatus = 1;
 		if(n%3 == 0)
 			score++;
@@ -297,23 +403,23 @@ int main()
 			mapGenerator(n-3);
 		if (n == 425)
 			n = 5;
-		if (dist > 300 && diff == 100)
+		if (dist > 500 && diff == 100)
 		{
 			rarity = rarity - 5;
 			diff = diff - 25;
 		}
-		if (dist >800 && diff ==75)
+		if (dist > 1000 && diff ==75)
 		{
 			rarity = rarity - 5;
 			diff = diff - 25;
 			hdiff++;
 		}
-		if (dist >1900 && diff == 50)
+		if (dist > 1500 && diff == 50)
 	    {
 			rarity = rarity - 5;
 			diff = diff - 25;
 		}
-		if (dist >2500 && diff == 25)
+		if (dist > 2000 && diff == 25)
 		{
 			rarity = rarity - 5;
 			diff = diff - 25;
@@ -323,9 +429,9 @@ int main()
 
 	if (gameStatus == 1)
 	{
-		cout << endl << endl << endl << endl << "GAME OVER! " << endl;
+		cout << endl << endl << endl << endl << endl << endl << "GAME OVER! " << endl;
 		Sleep(500);
-		if (score > highscores[4].score)
+		if (score > highscores[4].score && godMode != 1)
 		{
 				if (score > highscores[3].score)
 					if (score > highscores[2].score)
