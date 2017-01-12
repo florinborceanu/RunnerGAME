@@ -25,8 +25,8 @@ struct mapStruct {
 mapStruct map[10][500];
 char name[100];
 char cursor = 3;
-int jump = 0, y = 4, score = 0, n = 0;
-int diff = 100, rarity = 35, hdiff = 3;
+int jump = 0, y = 4, score = 0, dist = 0, n = 0;
+int diff = 100, rarity = 50, hdiff = 3;
 int gameStatus = 0;
 highScores highscores[5];
 
@@ -150,73 +150,75 @@ int mainMenu() {
 
 void firstGenerator() {
 	int hight = rand() % hdiff;
-		for (int pave = 0; pave < 435; pave++)
-		{
-				for (int index = 8; index >= 8 - hight; index--)
-				{
-					if (pave % rarity == 0 && pave < 500)
-					{ 
-						int dictator = rand() % 3;
-						if (dictator == 0)
-						{
-							map[index][pave].blockType = 1;
-							map[index][pave].blockStyle = '#';
-							hight = rand() % hdiff;
-						}
-						else if (dictator == 1)
-						{
-							int j = rand() % 5;
-							for (int i = 0; i <= j; i++)
-							{
-								map[8][pave].blockType = 2;
-								map[8][pave].blockStyle = '^';
-								if (j % 2 == 0)
-								{
-									map[1][pave].blockType = 2;
-									map[1][pave].blockStyle = 'v';
-								}
-							}
-						}
-						else 
-						{
-							map[index][pave].blockStyle = ' ';
-							map[index][pave].blockType = 0;
-						}
-
-					}
-				}
-			map[9][pave].blockType = 4;
-			map[0][pave].blockType = 3;
-			map[9][pave].blockStyle = '*';
-			map[0][pave].blockStyle = '_';
-		}
-}
-
-void mapGenerator(int pave) {
-	int hight = rand() % hdiff;
-	for (int i = 8; i >= 8 - hight; i--)
-	{	
-		if (map[i][pave].blockType = !0)
-		{
-			map[i][pave].blockType = ' ';
-			map[i][pave].blockStyle = ' ';
-		}
-		if (pave % rarity == 0 && pave < 435)
-		{
-			map[i][pave].blockType = 1;
-			map[i][pave].blockStyle = '#';
-		}
-		else
+	for (int pave = 0; pave < 435; pave++)
+	{
+		for (int i = 8; i >= 8; i--)
 		{
 			map[i][pave].blockType = 0;
 			map[i][pave].blockStyle = ' ';
 		}
-		hight = rand() % hdiff;
+		map[9][pave].blockType = 4;
+		map[0][pave].blockType = 3;
+		map[9][pave].blockStyle = '*';
+		map[0][pave].blockStyle = '_';
+		if (pave % rarity == 0 && pave < 435 && pave >35)
+		{
+			if (rand() % 3 == 1)
+				for (int i = 0; i < 6 - hight; i++)
+				{
+					map[8][pave - i].blockType = 2;
+					map[8][pave - i].blockStyle = '^';
+					if (rand() % 3 == 2)
+					{
+						map[1][pave - i].blockType = 2;
+						map[1][pave - i].blockStyle = 'v';
+					}
+				}
+			else
+				for (int i = 8; i >= 8 - hight; i--)
+				{
+					map[i][pave].blockType = 1;
+					map[i][pave].blockStyle = '#';
+				}
+		}
 	}
-
 }
 
+void mapGenerator(int pave) {
+	int hight = rand() % hdiff;	
+	for (int i = 0; i <= 8; i++)
+	{
+		map[i][pave].blockType = 0;
+		map[i][pave].blockStyle = ' ';
+	}
+	map[9][pave].blockType = 4;
+	map[0][pave].blockType = 3;
+	map[9][pave].blockStyle = '*';
+	map[0][pave].blockStyle = '_';
+	if (pave % rarity == 0 && pave < 435)
+	{
+			for (int i = 8; i >= 8 - hight; i--)
+			{
+				map[i][pave].blockType = 1;
+				map[i][pave].blockStyle = '#';
+			}
+	}
+	else if (pave % rarity == 30 && pave < 435)
+	{
+		for (int i = 0; i <4 - hight; i++)
+		{
+			map[1][pave - i].blockType = 2;
+			map[1][pave - i].blockStyle = 'v';
+			map[8][pave-i].blockType = 2;
+			map[8][pave-i].blockStyle = '^';			
+		}
+	}
+	hight = rand() % hdiff;
+}
+
+
 void showMap(int u) {
+	char difficultyName[100];
 	for (int i = 0; i <= 9; i++)
 	{
 		for (int j = u; j <= u + 50; j++)
@@ -226,7 +228,26 @@ void showMap(int u) {
 		cout << endl;
 	}
 	cout << "Score: " << score;
-	cout << "\n Jump: " << jump << "\n Y's value: " << y << endl;
+	if (rarity == 50)
+		strcpy_s(difficultyName, "Easy");
+	if (rarity == 45)
+		strcpy_s(difficultyName, "Medium-Easy");
+	if (rarity == 40)
+		strcpy_s(difficultyName, "Medium");
+	if (rarity == 35)
+		strcpy_s(difficultyName, "Medium-Hard");
+	if (rarity == 30)
+		strcpy_s(difficultyName, "Hard");
+	cout << "\nJump power: " << jump << "\nDifficulty: " << difficultyName << endl;
+}
+
+void clearMap() {
+	for (int pave = 0; pave < 500; pave++)
+		for (int i = 0; i < 10; i++)
+		{
+			map[i][pave].blockType = 0;
+			map[i][pave].blockStyle = ' ';
+		}
 }
 
 int main()
@@ -245,6 +266,9 @@ int main()
 	mainMenu();
 	firstGenerator();
 	score = 0;
+	rarity = 50;
+	dist = 0;
+	n = 5;
 	while (gameStatus == 0)
 		{
 		gotoXY(0, 0);
@@ -256,32 +280,42 @@ int main()
 		{
 			y--; jump--;
 		}
-		else if (map[y + 1][n + 3].blockType != 4)
+		else if (y < 8)
 		{
 			y++;
 		}
+		if (map[y + 1][n].blockType == 1)
+			y--;
 		gotoXY(1, y);
 		cout << cursor;
 		if (map[y][n].blockType != 0)
 			gameStatus = 1;
-		score++;
-		if(n > 75)
-			mapGenerator(n-75);
+		if(n%3 == 0)
+			score++;
+		dist++;
+		if(n > 3)
+			mapGenerator(n-3);
 		if (n == 425)
 			n = 5;
-		if (score > 200 && diff == 100)
+		if (dist > 300 && diff == 100)
 		{
-			rarity = rarity - 3;
+			rarity = rarity - 5;
 			diff = diff - 25;
 		}
-		if (score >600 && diff ==75)
+		if (dist >800 && diff ==75)
 		{
-			rarity = rarity - 3;
+			rarity = rarity - 5;
 			diff = diff - 25;
+			hdiff++;
 		}
-		if (score >1500 && diff == 50)
+		if (dist >1900 && diff == 50)
 	    {
-			rarity = rarity - 3;
+			rarity = rarity - 5;
+			diff = diff - 25;
+		}
+		if (dist >2500 && diff == 25)
+		{
+			rarity = rarity - 5;
 			diff = diff - 25;
 		}
 		Sleep(20);
@@ -324,6 +358,7 @@ int main()
 					Sleep(500);
 				}
 		}
+		clearMap();
 		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 11);
 		cout << "\n\n< Go Back to MainMenu";
 		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);
