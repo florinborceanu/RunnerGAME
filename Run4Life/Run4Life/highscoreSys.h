@@ -46,3 +46,11 @@ void addScore(highScores scores[5], unsigned int score, char nameOne[100], int p
 	strcpy_s(scores[position].name, nameOne);
 	scores[position].score = score;
 }
+
+void resetHighscores(highScores scores[5]) {
+	for (int i = 0; i < 5; i++)
+	{
+		strcpy_s(scores[i].name, "No-One");
+		scores[i].score = 0;
+	}
+}

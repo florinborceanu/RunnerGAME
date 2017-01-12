@@ -1,3 +1,5 @@
-﻿  LINK : C:\Users\Impressive\Desktop\RunnerGAME\Run4Life\Debug\Run4Life.exe not found or not built by the last incremental link; performing full link
+﻿  Run4Life.cpp
+c:\users\impressive\desktop\runnergame\run4life\run4life\run4life.cpp(36): warning C4838: conversion from 'int' to 'SHORT' requires a narrowing conversion
+c:\users\impressive\desktop\runnergame\run4life\run4life\run4life.cpp(43): warning C4129: ' ': unrecognized character escape sequence
   Run4Life.vcxproj -> C:\Users\Impressive\Desktop\RunnerGAME\Run4Life\Debug\Run4Life.exe
   Run4Life.vcxproj -> C:\Users\Impressive\Desktop\RunnerGAME\Run4Life\Debug\Run4Life.pdb (Full PDB)

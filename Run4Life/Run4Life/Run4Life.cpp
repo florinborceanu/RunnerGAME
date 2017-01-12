@@ -23,7 +23,7 @@ struct mapStruct {
 	// v - roofSpike
 };
 mapStruct map[10][500];
-char name[100];
+char name[100], password[10];
 char cursor = 3;
 int jump = 0, y = 4, score = 0, dist = 0, n = 0;
 int diff = 100, rarity = 50, hdiff = 3;
@@ -51,7 +51,7 @@ void loadingScreen() {
 }
 
 int mainMenu() {
-	string Menu[5] = { "Start Game","Instructions", "HighScores","Credits", "Exit" };
+	string Menu[6] = { "Start Game","Instructions", "HighScores","Credits","Reset Highscores", "Exit" };
 	int pointer = 0;
 	Sleep(250);
 	while (true)
@@ -63,7 +63,7 @@ int mainMenu() {
 		cout << "           Main Menu\n(UP/DOWN to move, SPACE to select)\n\n\n";
 
 
-		for (int i = 0; i < 5; ++i)
+		for (int i = 0; i < 6; ++i)
 		{
 			if (i == pointer)
 			{
@@ -84,14 +84,14 @@ int mainMenu() {
 				pointer -= 1;
 				if (pointer == -1)
 				{
-					pointer = 4;
+					pointer = 5;
 				}
 				break;
 			}
 			else if (GetAsyncKeyState(VK_DOWN) != 0)
 			{
 				pointer += 1;
-				if (pointer == 5)
+				if (pointer == 6)
 				{
 					pointer = 0;
 				}
@@ -104,7 +104,7 @@ int mainMenu() {
 				case 0:
 				{
 					if (startMenu() == 1)
-						break;
+						return 1;
 					return 0;
 					break;
 				} break;
@@ -125,6 +125,7 @@ int mainMenu() {
 					{
 						Sleep(1);
 					}
+					return 1;
 				} break;
 				case 2:
 				{
@@ -139,6 +140,7 @@ int mainMenu() {
 					{
 						Sleep(1);
 					}
+					return 1;
 				} break;
 				case 3:
 				{
@@ -152,13 +154,42 @@ int mainMenu() {
 					{
 						Sleep(1);
 					}
+					return 1;
 				} break;
 				case 4:
-					gameStatus = -1;
-					updateHighscores(highscores);
-					return 0;;
+				{
+					system("cls");
+					strcpy_s(password, "root");
+					char pass[10];
+					cout << "Enter the root password: "; cin >> pass;
+					if (strcmp(password, pass) == 0)
+					{
+						resetHighscores(highscores);
+						updateHighscores(highscores);
+						cout << "\nOk.";
+						Sleep(500);
+					}
+					else
+						cout << "Wrong!";
+					SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 11);
+					cout << "\n\n< Go Back";
+					SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);
+					Sleep(100);
+					while (GetAsyncKeyState(VK_SPACE) == 0)
+					{
+						Sleep(1);
+					}
+					return 1;
 				}
 				break;
+				case 5:
+				{
+					gameStatus = -1;
+					updateHighscores(highscores);
+					return 0;
+				}
+				break;
+				}
 			}
 		}
 
@@ -196,6 +227,7 @@ int startMenu() {
 		{
 			if (GetAsyncKeyState(VK_UP) != 0)
 			{
+				Sleep(70);
 				pointer -= 1;
 				if (pointer == -1)
 				{
@@ -205,6 +237,7 @@ int startMenu() {
 			}
 			else if (GetAsyncKeyState(VK_DOWN) != 0)
 			{
+				Sleep(70);
 				pointer += 1;
 				if (pointer == 3)
 				{
@@ -218,12 +251,22 @@ int startMenu() {
 				{
 				case 0:
 				{
+					strcpy_s(password, "root");
+					char pass[10];
 					system("cls");
-					cout << "Starting new game as a God ...";
-					gameStatus = 0;
-					godMode = 1;
+					cout << "Enter the root password: "; cin >> pass;
+					if (strcmp(password, pass) == 0)
+					{
+						cout << "Starting new game as a God ...";
+						gameStatus = 0;
+						godMode = 1;
+						Sleep(500);
+						return 0;
+					}
+					else
+						cout << "Wrong ! ";
 					Sleep(500);
-					return 0;
+					return 1;
 				} break;
 				case 1:
 				{
@@ -366,8 +409,11 @@ int main()
 	cin >> name;
 	cout << "Ok, " << name << ", let's start !";
 	Sleep(1500);
-	_mainMenu:
-	mainMenu();
+_mainMenu:
+	int mainMenuValue;
+	mainMenuValue = mainMenu();
+	while (mainMenuValue == 1)
+		mainMenuValue=mainMenu();
 	firstGenerator();
 	score = 0;
 	rarity = 50;
