@@ -3,6 +3,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <time.h>
 #include "highscoreSys.h"
 
 using namespace std;
@@ -13,8 +14,9 @@ struct mapStruct {
 	// 2 - spike
 	// 3 - border
 	// 4 - floor
-	// 5 - scorePowerup
-	// 6 - slowspeedPowerup
+	// 5 - scoreBonusPowerup
+	// 6 - scoreMultiplierPowerup
+	// 7 - slowSpeedPowerup
 	char blockStyle;
 	// * - border
 	// = - floor
@@ -27,7 +29,8 @@ char name[100], password[10];
 char cursor = 3;
 int jump = 0, y = 4, score = 0, dist = 0, n = 0;
 int diff = 100, rarity = 50, hdiff = 3;
-int gameStatus = 0, godMode = 0;
+int gameStatus = 0, godMode = 0, activatedPowerUp = 0;
+int scoreMultiplier, mapSpeed, invulnerability;
 highScores highscores[5];
 
 int startMenu();
@@ -37,7 +40,7 @@ void gotoXY(int x, int y) {
 	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
 }
 
-
+#include "powerUpSys.h"
 void loadingScreen() {
 	system("cls");
 	cout << "Loading ... \n\n\n\n\     |";
@@ -199,7 +202,7 @@ int mainMenu() {
 }
 
 int startMenu() {
-	string Menu[3] = { "GodMode >>","Normal Mode >>", "<Go Back" };
+	string Menu[3] = { "Normal Mode >>","GodMode >>", "<Go Back" };
 	int pointer = 0;
 	Sleep(250);
 	while (true)
@@ -251,6 +254,17 @@ int startMenu() {
 				{
 				case 0:
 				{
+					system("cls");
+					cout << "Starting new game ...";
+					gameStatus = 0;
+					godMode = 0;
+					Sleep(500);
+					loadingScreen();
+					return 0;
+				} break;
+
+				case 1:
+				{
 					strcpy_s(password, "root");
 					char pass[10];
 					system("cls");
@@ -267,16 +281,6 @@ int startMenu() {
 						cout << "Wrong ! ";
 					Sleep(500);
 					return 1;
-				} break;
-				case 1:
-				{
-					system("cls");
-					cout << "Starting new game ...";
-					gameStatus = 0;
-					godMode = 0;
-					Sleep(500);
-					loadingScreen();
-					return 0;
 				} break;
 				case 2:
 				{
@@ -324,6 +328,13 @@ void firstGenerator() {
 					map[i][pave].blockStyle = '#';
 				}
 		}
+		if (pave % 100 == 0)
+		{
+			int random = 0;
+			random = rand() % 3 + 6;
+			map[5][pave].blockStyle = '?';
+			map[5][pave].blockType = random;
+		}
 	}
 }
 
@@ -356,12 +367,20 @@ void mapGenerator(int pave) {
 			map[8][pave-i].blockStyle = '^';			
 		}
 	}
+	if (pave % 200 == 0)
+	{
+		int random = 0;
+		random = rand() % 3 + 6;
+		map[5][pave].blockStyle = '?';
+		map[5][pave].blockType = random;
+	}
 	hight = rand() % hdiff;
 }
 
 
 void showMap(int u) {
 	char difficultyName[100] = {};
+	char powerUpName[100] = {};
 	for (int i = 0; i <= 9; i++)
 	{
 		for (int j = u; j <= u + 50; j++)
@@ -371,20 +390,54 @@ void showMap(int u) {
 		cout << endl;
 	}
 	cout << "Score: " << score;
-	if (dist > -1)
+	if (dist > -1) 
+	{
 		strcpy_s(difficultyName, "Easy");
+	}
 	if (dist > 500)
-		strcpy_s(difficultyName, "Medium-Easy");
+	{
+		strcpy_s(difficultyName, "                       ");
+		strcpy_s(difficultyName, "Medium-Easy                ");
+	}
 	if (dist > 1000)
-		strcpy_s(difficultyName, "Medium");
+	{
+		strcpy_s(difficultyName, "                       ");
+		strcpy_s(difficultyName, "Medium                      ");
+	}
 	if (dist > 1500)
-		strcpy_s(difficultyName, "Medium-Hard");
+	{
+		strcpy_s(difficultyName, "                       ");
+		strcpy_s(difficultyName, "Medium-Hard                     ");
+	}
 	if (dist > 2000)
-		strcpy_s(difficultyName, "Hard");
+	{
+		strcpy_s(difficultyName, "                       ");
+		strcpy_s(difficultyName, "Hard                          ");
+	}
+	cout << "\nDifficulty: " << difficultyName << endl;
+	if (activatedPowerUp == 0)
+	{
+		strcpy_s(powerUpName, "                       ");
+			strcpy_s(powerUpName, "No-One                   ");
+	}
+	if (activatedPowerUp == 1)
+	{
+		strcpy_s(powerUpName, "                       ");
+		strcpy_s(powerUpName, "Score Multiplier                   ");
+	}
+	if (activatedPowerUp == 2)
+	{
+		strcpy_s(powerUpName, "                       ");
+		strcpy_s(powerUpName, "Slow Speed                    ");
+	}
+	if (activatedPowerUp == 3)
+	{
+		strcpy_s(powerUpName, "                       ");
+			strcpy_s(powerUpName, "Invulnerability               ");
+	}
+	cout << "Active Powerup: " << powerUpName;
 	if (godMode == 1) {
-		cout << "\nDistance: " << dist << endl;
-		cout << "Jump power: " << jump;
-		cout << "\nDifficulty: " << difficultyName << endl;
+		cout << "Distance: " << dist << endl;
 	}
 }
 
@@ -399,6 +452,8 @@ void clearMap() {
 
 int main()
 {
+	unsigned old_clock;
+	unsigned current_clock;
 	HWND console = GetConsoleWindow();
 	RECT r;
 	GetWindowRect(console, &r);
@@ -419,6 +474,7 @@ _mainMenu:
 	rarity = 50;
 	dist = 0;
 	n = 5;
+	activatedPowerUp = 0; mapSpeed = 10; invulnerability = 0; scoreMultiplier = 1;
 	while (gameStatus == 0)
 		{
 		gotoXY(0, 0);
@@ -441,9 +497,55 @@ _mainMenu:
 		if (godMode == 1 && GetAsyncKeyState(VK_SPACE))
 			gameStatus = 1;
 		if (map[y][n].blockType != 0 && godMode == 0)
-			gameStatus = 1;
-		if(n%3 == 0)
-			score++;
+			if (map[y][n].blockType > 4)
+			{
+				if (map[y][n].blockType > 5)
+					old_clock = clock();
+				activatePowerUp(map[y][n].blockType);
+			}
+			else
+				if (invulnerability == 0)
+					gameStatus = 1;
+
+
+		current_clock = clock();
+		if(activatedPowerUp == 1)
+			if (((current_clock - old_clock) / CLOCKS_PER_SEC) <= 5)
+			{
+				current_clock = clock();
+				scoreMultiplier = 2;
+			}
+			else
+			{
+				scoreMultiplier = 1;
+				activatedPowerUp = 0;
+			}
+		if (activatedPowerUp == 2)
+			if (((current_clock - old_clock) / CLOCKS_PER_SEC) <= 5)
+			{
+				current_clock = clock();
+				mapSpeed = 45;
+			}
+			else
+			{
+				mapSpeed = 10;
+				activatedPowerUp = 0;
+			}
+		if (activatedPowerUp == 3)
+			if (((current_clock - old_clock) / CLOCKS_PER_SEC) <= 5)
+			{
+				current_clock = clock();
+				invulnerability = 1;
+			}
+			else
+			{
+				invulnerability = 0;
+				activatedPowerUp = 0;
+			}
+
+
+		if (n % 3 == 0)
+			score = score + (1 * scoreMultiplier);
 		dist++;
 		if(n > 3)
 			mapGenerator(n-3);
@@ -470,12 +572,13 @@ _mainMenu:
 			rarity = rarity - 5;
 			diff = diff - 25;
 		}
-		Sleep(20);
+		Sleep(mapSpeed);
 		}
 
 	if (gameStatus == 1)
 	{
-		cout << endl << endl << endl << endl << endl << endl << "GAME OVER! " << endl;
+		system("cls");
+		cout << "GAME OVER! " << endl;
 		Sleep(500);
 		if (score > highscores[4].score && godMode != 1)
 		{
